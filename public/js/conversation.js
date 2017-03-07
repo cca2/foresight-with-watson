@@ -478,7 +478,7 @@ var ConversationPanel = (function() {
       if (!isContinueButton) {
         messageDivs = buildMessageDomElements(newPayload, isUser);
       }else {
-        messageDivs = buildContinueButtonDomElements(continueButton.text, function() {          
+        messageDivs = buildContinueButtonDomElements(isContinueButton.text, function() {          
         })
       }
       var chatBoxElement = document.querySelector(settings.selectors.chatBox);
