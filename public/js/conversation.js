@@ -37,7 +37,15 @@ var ConversationPanel = (function() {
     Api.setRequestPayload = function(newPayloadStr) {
       currentRequestPayloadSetter.call(Api, newPayloadStr);
       var payload = JSON.parse(newPayloadStr);
-      displayMessage(payload, settings.authorTypes.user);
+
+      var inputText = '';
+
+      if (payload.input)
+        inputText = payload.input.text;
+
+      if (inputText != 'ASK_SO_WHAT') {
+        displayMessage(payload, settings.authorTypes.user);
+      }
     };
 
     var currentResponsePayloadSetter = Api.setResponsePayload;
@@ -69,7 +77,7 @@ var ConversationPanel = (function() {
         payload.context.action = 'none';
         Api.extractSearchWords(signal_source_link);
         displayMessage(payload, settings.authorTypes.watson);
-      }else if (action == 'extract_signal_data') {
+      }else if (action === 'extract_signal_data') {
         var signal_source_link = payload.input.text;
         var sourceLinkPos = signal_source_link.indexOf(payload.context.webProtocol);
         signal_source_link = signal_source_link.substring(sourceLinkPos).split(' ')[0];
@@ -78,7 +86,7 @@ var ConversationPanel = (function() {
         currentResponsePayloadSetter.call(Api, JSON.stringify(payload));        
         Api.extractSignalData(signal_source_link);
         displayMessage(payload, settings.authorTypes.watson);        
-      }else if (action == 'select_descriptions') {
+      }else if (action === 'select_descriptions') {
         var entities = payload.entities;
         var optionsList = [];
         var currentSignalData = Api.getResponsePayload().context.signal;
@@ -170,6 +178,8 @@ var ConversationPanel = (function() {
         var payload = Api.getResponsePayload();
         payload.context.signal.so_what = payload.context.signal.change_relevance + ' ' + payload.context.signal.inspiration;
         displaySignal(payload, 'pt-br');
+        displayMessage(payload, settings.authorTypes.watson);
+      }else {
         displayMessage(payload, settings.authorTypes.watson);
       }
       // displayMessage(payload, settings.authorTypes.watson);      
@@ -478,8 +488,7 @@ var ConversationPanel = (function() {
       if (!isContinueButton) {
         messageDivs = buildMessageDomElements(newPayload, isUser);
       }else {
-        messageDivs = buildContinueButtonDomElements(isContinueButton.text, function() {          
-        })
+        messageDivs = buildContinueButtonDomElements(isContinueButton.text, "hasReviewedText()")
       }
       var chatBoxElement = document.querySelector(settings.selectors.chatBox);
       var previousLatest = chatBoxElement.querySelectorAll((isUser
@@ -551,7 +560,7 @@ var ConversationPanel = (function() {
     return messageArray;
   }
 
-  function buildContinueButtonDomElements(text, functionClick) {
+  function buildContinueButtonDomElements(text, functionName) {
     var messageArray = [];
     var buttonJson = {
       // <div class='segments'>
@@ -565,6 +574,7 @@ var ConversationPanel = (function() {
           // <div class='message-inner'>
           'tagName': 'button',
           'classNames': ['continue-dialog-button'],
+          'attributes': [{'name': 'onclick', 'value': functionName}],
           'text': text
         }]
       }]      

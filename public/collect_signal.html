@@ -62,7 +62,6 @@
     function updateTitle(title) {
       var signal = Api.getResponsePayload().context.signal;
       signal.title_pt = title;
-      console.log('>>> 0 <<<');
     }
 
     function updateDescription(text) {
@@ -74,8 +73,20 @@
     function updateSoWhat(text) {
       var signal = Api.getResponsePayload().context.signal;
       signal.so_what = text;
-      console.log('>>> 20 <<<');
     }
+
+    //Handles the Review of the Text
+    function hasReviewedText() {
+      var context;
+      var latestResponse = Api.getResponsePayload();
+      if (latestResponse) {
+        context = latestResponse.context;
+      }
+
+      // Send the user message
+      Api.sendRequest('ASK_SO_WHAT', context);      
+    }
+
   </script>
 </body>
 </html>
