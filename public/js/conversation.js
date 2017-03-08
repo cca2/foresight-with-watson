@@ -43,7 +43,12 @@ var ConversationPanel = (function() {
       if (payload.input)
         inputText = payload.input.text;
 
-      if (inputText != 'ASK_SO_WHAT') {
+      if (inputText == 'PRESS_CONTINUE_DIALOG') {
+        var dialogButtons = document.getElementsByClassName('continue-dialog-button');
+        for (var i = 0; i < dialogButtons.length; i++) {
+          dialogButtons.item(i).disabled = true;
+        }
+      }else {
         displayMessage(payload, settings.authorTypes.user);
       }
     };
